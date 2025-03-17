@@ -43,7 +43,7 @@ public:
         centralwidget->setObjectName("centralwidget");
         tableWidget = new QTableWidget(centralwidget);
         tableWidget->setObjectName("tableWidget");
-        tableWidget->setGeometry(QRect(10, 10, 621, 351));
+        tableWidget->setGeometry(QRect(10, 10, 681, 361));
         CurrentEdit = new QLineEdit(centralwidget);
         CurrentEdit->setObjectName("CurrentEdit");
         CurrentEdit->setGeometry(QRect(110, 410, 131, 31));
