@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QTableWidgetItem>
+#include <QVBoxLayout>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QString>
@@ -27,10 +29,14 @@ public:
 
 public slots:
     void updateTable();
+    void on_openFileButton_clicked();
+    void on_addDateButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     Date parseDate(const QString &dateStr);
     void addRow(const QString &property, const QString &value);
+    QVector<Date> readDatesFromFile(const QString &filePath); // Чтение дат из файла
+    void displayDates(const QVector<Date>& dates);
 };
 #endif // MAINWINDOW_H

@@ -16,6 +16,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
@@ -31,6 +32,9 @@ public:
     QLabel *Currenlabel;
     QLineEdit *BirthdayEdit;
     QLabel *Birthdlabel;
+    QPushButton *updateButton;
+    QPushButton *openFileButton;
+    QPushButton *addButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -38,7 +42,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->resize(846, 755);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         tableWidget = new QTableWidget(centralwidget);
@@ -56,10 +60,19 @@ public:
         Birthdlabel = new QLabel(centralwidget);
         Birthdlabel->setObjectName("Birthdlabel");
         Birthdlabel->setGeometry(QRect(270, 380, 141, 31));
+        updateButton = new QPushButton(centralwidget);
+        updateButton->setObjectName("updateButton");
+        updateButton->setGeometry(QRect(500, 390, 131, 31));
+        openFileButton = new QPushButton(centralwidget);
+        openFileButton->setObjectName("openFileButton");
+        openFileButton->setGeometry(QRect(500, 430, 131, 31));
+        addButton = new QPushButton(centralwidget);
+        addButton->setObjectName("addButton");
+        addButton->setGeometry(QRect(500, 470, 131, 31));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 23));
+        menubar->setGeometry(QRect(0, 0, 846, 23));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -75,6 +88,9 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         Currenlabel->setText(QCoreApplication::translate("MainWindow", "\320\242\320\265\320\272\321\203\321\211\320\260\321\217 \320\264\320\260\321\202\320\260", nullptr));
         Birthdlabel->setText(QCoreApplication::translate("MainWindow", "\320\224\320\265\320\275\321\214 \321\200\320\276\320\266\320\264\320\265\320\275\320\270\321\217", nullptr));
+        updateButton->setText(QCoreApplication::translate("MainWindow", "\320\236\320\261\320\275\320\276\320\262\320\270\321\202\321\214 \321\202\320\260\320\261\320\273\320\270\321\206\321\203", nullptr));
+        openFileButton->setText(QCoreApplication::translate("MainWindow", "\320\236\321\202\320\272\321\200\321\213\321\202\321\214 \321\204\320\260\320\271\320\273", nullptr));
+        addButton->setText(QCoreApplication::translate("MainWindow", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\264\320\260\321\202\321\203", nullptr));
     } // retranslateUi
 
 };
