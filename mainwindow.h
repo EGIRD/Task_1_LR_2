@@ -31,10 +31,13 @@ public slots:
     void updateTable();
     void on_openFileButton_clicked();
     void on_addDateButton_clicked();
+    void on_deleteDateButton_clicked();
+    void on_editDateButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     Date parseDate(const QString &dateStr);
+    QString currentFilePath;
     void addRow(const QString &property, const QString &value);
     QVector<Date> readDatesFromFile(const QString &filePath); // Чтение дат из файла
     void displayDates(const QVector<Date>& dates);
