@@ -1,8 +1,22 @@
 #include "date.h"
 #include <cmath>
 
-Date::Date(int m_day, int m_month, int m_year)
-    : day(m_day), month(m_month), year(m_year) {}
+Date::Date(int m_day, int m_month, int m_year) {
+    if(m_month < 1 || m_month > 12 || m_day < 1 || m_year < 1) {
+        day = 1;
+        month = 1;
+        year = 1;
+    } else {
+        int maxDay = DayInMonth(m_month, m_year);
+        if(m_day > maxDay) {
+            day = maxDay;
+        } else {
+            day = m_day;
+        }
+        month = m_month;
+        year = m_year;
+    }
+}
 
 int Date::GetDay() const {
     return day;
@@ -20,7 +34,7 @@ bool Date::IsLeap() const {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
-int Date::DayInMonth() const
+int Date::DayInMonth(int month, int year) const
 {
     if (month == 2) {
         return IsLeap() ? 29 : 28;
@@ -34,7 +48,7 @@ int Date::DayInMonth() const
 Date Date::NextDay() const
 {
     int d = day, m = month, y = year;
-    if (d < DayInMonth()) {
+    if (d < DayInMonth(m,y)) {
         d++;
     } else {
         d = 1;
@@ -60,7 +74,7 @@ Date Date::PreviousDate() const
             m = 12;
             y--;
         }
-        d = DayInMonth();
+        d = DayInMonth(m,y);
     }
     return Date(d, m, y);
 }
@@ -70,26 +84,22 @@ short Date::WeekNumber() const
     int dayOfYear = day;
     for (int i = 1; i < month; ++i) {
         Date tempMonth(1, i, year);
-        dayOfYear += tempMonth.DayInMonth();
+        dayOfYear += tempMonth.DayInMonth(i,year);
     }
     return (dayOfYear - 1) / 7 + 1;
 }
 
-int Date::DayToDays(const Date& date) const
-{
-    auto IsLeap = [](int y) {
-        return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
-    };
+int Date::DayToDays(const Date& date) const {
     int days = date.day;
 
     for (int i = 1; i < date.month; ++i) {
-        Date temp(1, i, date.year);
-        days += temp.DayInMonth();
+        days += DayInMonth(i, date.year);
     }
+
     days += 365 * (date.year - 1);
 
     for (int y = 1; y < date.year; ++y) {
-        if (IsLeap(y)) {
+        if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)) {
             days++;
         }
     }

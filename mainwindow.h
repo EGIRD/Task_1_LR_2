@@ -28,6 +28,8 @@ public:
     ~MainWindow();
 
 public slots:
+    bool validateInput(const QString &input);
+    bool validateInputs();
     void updateTable();
     void on_openFileButton_clicked();
     void on_addDateButton_clicked();

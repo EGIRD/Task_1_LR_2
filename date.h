@@ -18,7 +18,7 @@ public:
     int GetDay() const;
     int GetMonth() const;
     int GetYear() const;
-    int DayInMonth() const;
+    int DayInMonth(int month, int year) const;
     int DayToDays(const Date& date) const;
     int Duration(const Date& date) const;
     int DaysTillYourBirthday(const Date& birthdaydate) const;

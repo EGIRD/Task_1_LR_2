@@ -7,15 +7,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->tableWidget->setRowCount(10);
     ui->tableWidget->setColumnCount(7);
     ui->tableWidget->setHorizontalHeaderLabels({"Дата", "След. день", "Пред. день", "Високосный год", "Номер недели", "До дня рождения", "Разница в днях"});
-    ui->tableWidget->verticalHeader()->setVisible(true); // Скрываем нумерацию строк
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // Растягиваем колонки
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget->setShowGrid(false);
+
+    for(int col = 0; col < ui->tableWidget->columnCount(); ++col) {
+        ui->tableWidget->setColumnWidth(col,150);
+    }
+
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableWidget->verticalHeader()->setVisible(true);
 
     connect(ui->CurrentEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->BirthdayEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
+    connect(ui->AnotherEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->updateButton, &QPushButton::clicked, this, &MainWindow::updateTable);
     connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::on_openFileButton_clicked);
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addDateButton_clicked);
@@ -26,50 +33,88 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow:: validateInput(const QString &input) {
+    QRegularExpression regExp("^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$");
+    return regExp.match(input).hasMatch();
+}
+
+bool MainWindow::validateInputs() {
+    QString currentDateStr = ui->CurrentEdit->text();
+    QString birthdayDateStr = ui->BirthdayEdit->text();
+    QString anotherDateStr = ui->AnotherEdit->text();
+
+    if (currentDateStr.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Поле текущей даты не может быть пустым!");
+        return false;
+    }
+    if (!validateInput(currentDateStr)) {
+        QMessageBox::warning(this, "Ошибка", "Некорректный формат текущей даты!");
+        return false;
+    }
+
+    if (!birthdayDateStr.isEmpty() && !validateInput(birthdayDateStr)) {
+        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты рождения!");
+        return false;
+    }
+
+    if (!anotherDateStr.isEmpty() && !validateInput(anotherDateStr)) {
+        QMessageBox::warning(this, "Ошибка", "Некорректный формат произвольной даты!");
+        return false;
+    }
+
+    return true;
+}
+
 void MainWindow::updateTable()
 {
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(1);
 
+    static bool isUpdating = false; // Флаг для предотвращения повторного вызова
+    if (isUpdating) return;
+    isUpdating = true;
+
+    if (!validateInputs()) {
+        isUpdating = false;
+        return;
+    }
+
     QString currentDateStr = ui->CurrentEdit->text();
     Date currentDate = parseDate(currentDateStr);
 
     if(currentDate.toString().empty()) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты !");
         return;
     }
-
-    QString birthdayDateStr = ui->BirthdayEdit->text();
-    Date birthdayDate = parseDate(birthdayDateStr);
-
-    if(!birthdayDateStr.isEmpty() && birthdayDate.toString().empty()) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты рождения !");
-        return;
-    }
-
-
-
-    // for (int col = 0; col < ui->tableWidget->columnCount(); ++col) {
-    //     if (ui->tableWidget->item(1, col)) {
-    //         delete ui->tableWidget->item(1, col); // Удаляем старые элементы
-    //     }
-    // }
 
     ui->tableWidget->setItem(0, 0, new QTableWidgetItem(QString::fromStdString(currentDate.toString())));
     ui->tableWidget->setItem(0, 1, new QTableWidgetItem(QString::fromStdString(currentDate.NextDay().toString())));
     ui->tableWidget->setItem(0, 2, new QTableWidgetItem(QString::fromStdString(currentDate.PreviousDate().toString())));
     ui->tableWidget->setItem(0, 3, new QTableWidgetItem(currentDate.IsLeap() ? "Да" : "Нет"));
     ui->tableWidget->setItem(0, 4, new QTableWidgetItem(QString::number(currentDate.WeekNumber())));
-    ui->tableWidget->setItem(0, 5, new QTableWidgetItem(QString::number(currentDate.DaysTillYourBirthday(birthdayDate))));
-    ui->tableWidget->setItem(0, 6, new QTableWidgetItem(QString::number(currentDate.Duration(birthdayDate))));
 
-    // if (birthdayDateStr.isEmpty()) {
-    //     ui->tableWidget->setItem(0, 5, new QTableWidgetItem("0"));
-    //     ui->tableWidget->setItem(0, 6, new QTableWidgetItem("0"));
-    // } else {
-    //     ui->tableWidget->setItem(0, 5, new QTableWidgetItem(QString::number(currentDate.DaysTillYourBirthday(birthdayDate))));
-    //     ui->tableWidget->setItem(0, 6, new QTableWidgetItem(QString::number(currentDate.Duration(birthdayDate))));
-    // }
+    QString birthdayDateStr = ui->BirthdayEdit->text();
+    Date birthdayDate = parseDate(birthdayDateStr);
+
+
+
+    if (birthdayDateStr.isEmpty() || birthdayDate.toString().empty()) {
+        ui->tableWidget->setItem(0, 5, new QTableWidgetItem("0"));
+    } else {
+        ui->tableWidget->setItem(0, 5, new QTableWidgetItem(QString::number(currentDate.DaysTillYourBirthday(birthdayDate))));
+    }
+
+    QString anotherDateStr = ui->AnotherEdit->text();
+    Date anotherDate = parseDate(anotherDateStr);
+
+    if (!anotherDateStr.isEmpty() && !anotherDate.toString().empty()) {
+        int duration = currentDate.Duration(anotherDate);
+        ui->tableWidget->setItem(0, 6, new QTableWidgetItem(QString::number(duration)));
+    } else {
+        ui->tableWidget->setItem(0, 6, new QTableWidgetItem("0"));
+    }
+
+    isUpdating = false;
+    ui->tableWidget->update();
 }
 
 Date MainWindow::parseDate(const QString &dateStr)
@@ -79,7 +124,11 @@ Date MainWindow::parseDate(const QString &dateStr)
         int day = parts[0].toInt();
         int month = parts[1].toInt();
         int year = parts[2].toInt();
-        return Date(day, month, year);
+
+        QDate date(year, month, day);
+        if (date.isValid()) {
+            return Date(day, month, year);
+        }
     }
     return Date();
 }
@@ -243,6 +292,7 @@ void MainWindow::displayDates(const QVector<Date>& dates) {
     // Получаем текущую дату из поля ввода
     QString currentDateStr = ui->CurrentEdit->text();
     Date currentDate = parseDate(currentDateStr);
+
 
     // Если поле пустое или дата некорректна, используем системную дату
     if (currentDate.toString().empty()) {

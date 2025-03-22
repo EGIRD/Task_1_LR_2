@@ -35,6 +35,8 @@ public:
     QPushButton *updateButton;
     QPushButton *openFileButton;
     QPushButton *addButton;
+    QLabel *AnotherLabel;
+    QLineEdit *AnotherEdit;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -47,28 +49,34 @@ public:
         centralwidget->setObjectName("centralwidget");
         tableWidget = new QTableWidget(centralwidget);
         tableWidget->setObjectName("tableWidget");
-        tableWidget->setGeometry(QRect(10, 10, 681, 361));
+        tableWidget->setGeometry(QRect(0, 0, 841, 461));
         CurrentEdit = new QLineEdit(centralwidget);
         CurrentEdit->setObjectName("CurrentEdit");
-        CurrentEdit->setGeometry(QRect(110, 410, 131, 31));
+        CurrentEdit->setGeometry(QRect(40, 520, 131, 31));
         Currenlabel = new QLabel(centralwidget);
         Currenlabel->setObjectName("Currenlabel");
-        Currenlabel->setGeometry(QRect(110, 380, 141, 31));
+        Currenlabel->setGeometry(QRect(40, 490, 141, 31));
         BirthdayEdit = new QLineEdit(centralwidget);
         BirthdayEdit->setObjectName("BirthdayEdit");
-        BirthdayEdit->setGeometry(QRect(270, 410, 131, 31));
+        BirthdayEdit->setGeometry(QRect(40, 580, 131, 31));
         Birthdlabel = new QLabel(centralwidget);
         Birthdlabel->setObjectName("Birthdlabel");
-        Birthdlabel->setGeometry(QRect(270, 380, 141, 31));
+        Birthdlabel->setGeometry(QRect(40, 550, 141, 31));
         updateButton = new QPushButton(centralwidget);
         updateButton->setObjectName("updateButton");
-        updateButton->setGeometry(QRect(500, 390, 131, 31));
+        updateButton->setGeometry(QRect(700, 570, 131, 31));
         openFileButton = new QPushButton(centralwidget);
         openFileButton->setObjectName("openFileButton");
-        openFileButton->setGeometry(QRect(500, 430, 131, 31));
+        openFileButton->setGeometry(QRect(700, 610, 131, 31));
         addButton = new QPushButton(centralwidget);
         addButton->setObjectName("addButton");
-        addButton->setGeometry(QRect(500, 470, 131, 31));
+        addButton->setGeometry(QRect(700, 650, 131, 31));
+        AnotherLabel = new QLabel(centralwidget);
+        AnotherLabel->setObjectName("AnotherLabel");
+        AnotherLabel->setGeometry(QRect(40, 610, 141, 31));
+        AnotherEdit = new QLineEdit(centralwidget);
+        AnotherEdit->setObjectName("AnotherEdit");
+        AnotherEdit->setGeometry(QRect(40, 640, 131, 31));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -91,6 +99,7 @@ public:
         updateButton->setText(QCoreApplication::translate("MainWindow", "\320\236\320\261\320\275\320\276\320\262\320\270\321\202\321\214 \321\202\320\260\320\261\320\273\320\270\321\206\321\203", nullptr));
         openFileButton->setText(QCoreApplication::translate("MainWindow", "\320\236\321\202\320\272\321\200\321\213\321\202\321\214 \321\204\320\260\320\271\320\273", nullptr));
         addButton->setText(QCoreApplication::translate("MainWindow", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\264\320\260\321\202\321\203", nullptr));
+        AnotherLabel->setText(QCoreApplication::translate("MainWindow", "\320\237\321\200\320\276\320\270\320\267\320\262\320\276\320\273\321\214\320\275\320\260\321\217 \320\264\320\260\321\202\320\260", nullptr));
     } // retranslateUi
 
 };
