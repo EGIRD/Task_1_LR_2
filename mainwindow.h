@@ -28,8 +28,6 @@ public:
     ~MainWindow();
 
 public slots:
-    bool validateInput(const QString &input);
-    bool validateInputs();
     void updateTable();
     void on_openFileButton_clicked();
     void on_addDateButton_clicked();
@@ -41,7 +39,11 @@ private:
     Date parseDate(const QString &dateStr);
     QString currentFilePath;
     void addRow(const QString &property, const QString &value);
+    void clearInputs();
     QVector<Date> readDatesFromFile(const QString &filePath); // Чтение дат из файла
     void displayDates(const QVector<Date>& dates);
+    bool validateInput(const QString &input);
+    bool validateInputs();
+
 };
 #endif // MAINWINDOW_H

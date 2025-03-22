@@ -27,39 +27,30 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 namespace {
 struct qt_meta_stringdata_MainWindow_t {
-    uint offsetsAndSizes[20];
+    uint offsetsAndSizes[14];
     char stringdata0[11];
-    char stringdata1[14];
+    char stringdata1[12];
     char stringdata2[1];
-    char stringdata3[6];
-    char stringdata4[15];
-    char stringdata5[12];
+    char stringdata3[26];
+    char stringdata4[25];
+    char stringdata5[28];
     char stringdata6[26];
-    char stringdata7[25];
-    char stringdata8[28];
-    char stringdata9[26];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_MainWindow_t::offsetsAndSizes) + ofs), len 
 Q_CONSTINIT static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
     {
         QT_MOC_LITERAL(0, 10),  // "MainWindow"
-        QT_MOC_LITERAL(11, 13),  // "validateInput"
-        QT_MOC_LITERAL(25, 0),  // ""
-        QT_MOC_LITERAL(26, 5),  // "input"
-        QT_MOC_LITERAL(32, 14),  // "validateInputs"
-        QT_MOC_LITERAL(47, 11),  // "updateTable"
-        QT_MOC_LITERAL(59, 25),  // "on_openFileButton_clicked"
-        QT_MOC_LITERAL(85, 24),  // "on_addDateButton_clicked"
-        QT_MOC_LITERAL(110, 27),  // "on_deleteDateButton_clicked"
-        QT_MOC_LITERAL(138, 25)   // "on_editDateButton_clicked"
+        QT_MOC_LITERAL(11, 11),  // "updateTable"
+        QT_MOC_LITERAL(23, 0),  // ""
+        QT_MOC_LITERAL(24, 25),  // "on_openFileButton_clicked"
+        QT_MOC_LITERAL(50, 24),  // "on_addDateButton_clicked"
+        QT_MOC_LITERAL(75, 27),  // "on_deleteDateButton_clicked"
+        QT_MOC_LITERAL(103, 25)   // "on_editDateButton_clicked"
     },
     "MainWindow",
-    "validateInput",
-    "",
-    "input",
-    "validateInputs",
     "updateTable",
+    "",
     "on_openFileButton_clicked",
     "on_addDateButton_clicked",
     "on_deleteDateButton_clicked",
@@ -74,7 +65,7 @@ Q_CONSTINIT static const uint qt_meta_data_MainWindow[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -82,17 +73,13 @@ Q_CONSTINIT static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   56,    2, 0x0a,    1 /* Public */,
-       4,    0,   59,    2, 0x0a,    3 /* Public */,
-       5,    0,   60,    2, 0x0a,    4 /* Public */,
-       6,    0,   61,    2, 0x0a,    5 /* Public */,
-       7,    0,   62,    2, 0x0a,    6 /* Public */,
-       8,    0,   63,    2, 0x0a,    7 /* Public */,
-       9,    0,   64,    2, 0x0a,    8 /* Public */,
+       1,    0,   44,    2, 0x0a,    1 /* Public */,
+       3,    0,   45,    2, 0x0a,    2 /* Public */,
+       4,    0,   46,    2, 0x0a,    3 /* Public */,
+       5,    0,   47,    2, 0x0a,    4 /* Public */,
+       6,    0,   48,    2, 0x0a,    5 /* Public */,
 
  // slots: parameters
-    QMetaType::Bool, QMetaType::QString,    3,
-    QMetaType::Bool,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -111,11 +98,6 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_MainWindow_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<MainWindow, std::true_type>,
-        // method 'validateInput'
-        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'validateInputs'
-        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         // method 'updateTable'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_openFileButton_clicked'
@@ -136,18 +118,15 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<MainWindow *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: { bool _r = _t->validateInput((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])));
-            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 1: { bool _r = _t->validateInputs();
-            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 2: _t->updateTable(); break;
-        case 3: _t->on_openFileButton_clicked(); break;
-        case 4: _t->on_addDateButton_clicked(); break;
-        case 5: _t->on_deleteDateButton_clicked(); break;
-        case 6: _t->on_editDateButton_clicked(); break;
+        case 0: _t->updateTable(); break;
+        case 1: _t->on_openFileButton_clicked(); break;
+        case 2: _t->on_addDateButton_clicked(); break;
+        case 3: _t->on_deleteDateButton_clicked(); break;
+        case 4: _t->on_editDateButton_clicked(); break;
         default: ;
         }
     }
+    (void)_a;
 }
 
 const QMetaObject *MainWindow::metaObject() const
@@ -169,13 +148,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 5;
     }
     return _id;
 }
