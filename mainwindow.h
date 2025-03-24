@@ -40,6 +40,7 @@ private:
     QString currentFilePath;
     void addRow(const QString &property, const QString &value);
     void clearInputs();
+    void updateTableForFileDates(const QVector<Date>& dates);
     QVector<Date> readDatesFromFile(const QString &filePath); // Чтение дат из файла
     void displayDates(const QVector<Date>& dates);
     bool validateInput(const QString &input);

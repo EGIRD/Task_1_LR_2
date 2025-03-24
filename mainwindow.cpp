@@ -20,13 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->tableWidget->verticalHeader()->setVisible(true);
 
-
-
     connect(ui->CurrentEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->BirthdayEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->AnotherEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->updateButton, &QPushButton::clicked, this, &MainWindow::updateTable);
-    //connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::on_openFileButton_clicked);
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addDateButton_clicked);
 }
 
@@ -42,7 +39,7 @@ void MainWindow::on_openFileButton_clicked()
     if (!filePath.isEmpty()) {
         currentFilePath = filePath;
         QVector<Date> dates = readDatesFromFile(filePath);
-        displayDates(dates);
+        updateTableForFileDates(dates); // Используем новый метод
     }
 }
 
@@ -231,7 +228,7 @@ void MainWindow::updateTable()
     QString currentDateStr = ui->CurrentEdit->text();
     Date currentDate = parseDate(currentDateStr);
 
-    if(currentDate.toString().empty()) {
+    if (currentDate.toString().empty()) {
         return;
     }
 
@@ -243,8 +240,6 @@ void MainWindow::updateTable()
 
     QString birthdayDateStr = ui->BirthdayEdit->text();
     Date birthdayDate = parseDate(birthdayDateStr);
-
-
 
     if (birthdayDateStr.isEmpty() || birthdayDate.toString().empty()) {
         ui->tableWidget->setItem(0, 5, new QTableWidgetItem("0"));
@@ -264,6 +259,33 @@ void MainWindow::updateTable()
 
     isUpdating = false;
     ui->tableWidget->update();
+}
+
+void MainWindow::updateTableForFileDates(const QVector<Date>& dates) {
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(dates.size());
+
+    // Используем системную дату для вычислений
+    QDate sysDate = QDate::currentDate();
+    Date currentDate(sysDate.day(), sysDate.month(), sysDate.year());
+
+    // Отображаем даты из файла
+    for (int i = 0; i < dates.size(); ++i) {
+        Date fileDate = dates[i];
+        Date nextDay = fileDate.NextDay();
+        int difference = currentDate.Duration(fileDate); // Разница с текущей датой
+
+        // Заполняем таблицу
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(fileDate.toString())));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(nextDay.toString())));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(fileDate.PreviousDate().toString())));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(fileDate.IsLeap() ? "Да" : "Нет"));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(fileDate.WeekNumber())));
+
+        // Инициализируем колонки нулями
+        ui->tableWidget->setItem(i, 5, new QTableWidgetItem("0")); // До дня рождения
+        ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0")); // Разница в днях
+    }
 }
 
 QVector<Date> MainWindow::readDatesFromFile(const QString &filePath)
@@ -311,7 +333,7 @@ void MainWindow::displayDates(const QVector<Date>& dates) {
         currentDate = Date(sysDate.day(), sysDate.month(), sysDate.year());
     }
 
-    // Отображаем даты из файла
+    // Отображаем даты
     for (int i = 0; i < dates.size(); ++i) {
         Date fileDate = dates[i];
         Date nextDay = fileDate.NextDay();
@@ -323,7 +345,25 @@ void MainWindow::displayDates(const QVector<Date>& dates) {
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(fileDate.PreviousDate().toString())));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(fileDate.IsLeap() ? "Да" : "Нет"));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(fileDate.WeekNumber())));
-        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(currentDate.DaysTillYourBirthday(fileDate))));
-        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(difference)));
+
+        // Для введенных вручную дат используем текущую логику
+        QString birthdayDateStr = ui->BirthdayEdit->text();
+        Date birthdayDate = parseDate(birthdayDateStr);
+
+        if (birthdayDateStr.isEmpty() || birthdayDate.toString().empty()) {
+            ui->tableWidget->setItem(i, 5, new QTableWidgetItem("0"));
+        } else {
+            ui->tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(currentDate.DaysTillYourBirthday(birthdayDate))));
+        }
+
+        QString anotherDateStr = ui->AnotherEdit->text();
+        Date anotherDate = parseDate(anotherDateStr);
+
+        if (!anotherDateStr.isEmpty() && !anotherDate.toString().empty()) {
+            int duration = currentDate.Duration(anotherDate);
+            ui->tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(duration)));
+        } else {
+            ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0"));
+        }
     }
 }
