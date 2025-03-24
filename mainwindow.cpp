@@ -7,7 +7,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     ui->tableWidget->setRowCount(10);
     ui->tableWidget->setColumnCount(7);
     ui->tableWidget->setHorizontalHeaderLabels({"Дата", "След. день", "Пред. день", "Високосный год", "Номер недели", "До дня рождения", "Разница в днях"});
@@ -23,8 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->CurrentEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->BirthdayEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
     connect(ui->AnotherEdit, &QLineEdit::returnPressed, this, &MainWindow::updateTable);
-    connect(ui->updateButton, &QPushButton::clicked, this, &MainWindow::updateTable);
+    //connect(ui->updateButton, &QPushButton::clicked, this, &MainWindow::updateTable);
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addDateButton_clicked);
+    connect(ui->deleteButton, &QPushButton::clicked, this , &MainWindow::on_deleteDateButton_clicked);
+    connect(ui->editButton, &QPushButton::clicked, this, &MainWindow::on_editDateButton_clicked);
 }
 
 MainWindow::~MainWindow()
@@ -34,12 +35,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_openFileButton_clicked()
 {
-    qDebug() << "Открытие файла...";
     QString filePath = QFileDialog::getOpenFileName(this, "Открыть файл", "", "Текстовые файлы (*.txt)");
+
     if (!filePath.isEmpty()) {
         currentFilePath = filePath;
         QVector<Date> dates = readDatesFromFile(filePath);
-        updateTableForFileDates(dates); // Используем новый метод
+        updateTableForFileDates(dates);
     }
 }
 
@@ -59,8 +60,8 @@ void MainWindow::on_addDateButton_clicked()
         return;
     }
 
-    // Добавление дат в файл (или другой источник данных)
     QString filePath = QDir::homePath() + "/Документы/453505/ОАиП_2/dates.txt";
+
     QFile file(filePath);
     if (!file.open(QIODevice::Append | QIODevice::Text)) {
         QMessageBox::warning(this, "Ошибка", "Не удалось открыть файл для записи!");
@@ -68,57 +69,13 @@ void MainWindow::on_addDateButton_clicked()
     }
 
     QTextStream out(&file);
-    out << currentDateStr << "\n"; // Записываем текущую дату
-    out << birthdayDateStr << "\n"; // Записываем дату рождения
-    out << anotherDateStr << "\n"; // Записываем произвольную дату
+    out << currentDateStr << "\n";
+    out << birthdayDateStr << "\n";
+    out << anotherDateStr << "\n";
     file.close();
-
-    // Очистка полей ввода
     clearInputs();
 
     QMessageBox::information(this, "Успех", "Даты успешно добавлены!");
-}
-
-void MainWindow::on_editDateButton_clicked()
-{
-    // Получаем выбранную строку в таблице
-    int row = ui->tableWidget->currentRow();
-    if (row == -1) {
-        QMessageBox::warning(this, "Ошибка", "Выберите дату для редактирования!");
-        return;
-    }
-
-    // Получаем новую дату из поля ввода
-    QString newDateStr = ui->CurrentEdit->text().trimmed();
-    Date newDate = parseDate(newDateStr);
-    if (newDate.toString().empty()) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты!");
-        return;
-    }
-
-    // Читаем все даты из файла
-    QVector<Date> dates = readDatesFromFile("dates.txt");
-
-    // Заменяем выбранную дату на новую
-    if (row < dates.size()) {
-        dates[row] = newDate;
-    }
-
-    // Перезаписываем файл
-    QFile file("dates.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Ошибка", "Не удалось открыть файл для записи!");
-        return;
-    }
-
-    QTextStream out(&file);
-    for (const Date& date : dates) {
-        out << QString::fromStdString(date.toString()) << "\n";
-    }
-    file.close();
-
-    // Обновляем таблицу
-    displayDates(dates);
 }
 
 void MainWindow::on_deleteDateButton_clicked()
@@ -139,7 +96,6 @@ void MainWindow::on_deleteDateButton_clicked()
         dates.remove(row);
     }
 
-    // Перезаписываем файл
     QFile file(currentFilePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "Ошибка", "Не удалось открыть файл для записи!");
@@ -152,7 +108,44 @@ void MainWindow::on_deleteDateButton_clicked()
     }
     file.close();
 
-    // Обновляем таблицу
+    displayDates(dates);
+}
+
+void MainWindow::on_editDateButton_clicked()
+{
+    int row = ui->tableWidget->currentRow();
+    if (row == -1) {
+        QMessageBox::warning(this, "Ошибка", "Выберите дату для редактирования!");
+        return;
+    }
+
+    QString newDateStr = ui->CurrentEdit->text().trimmed();
+
+    Date newDate = parseDate(newDateStr);
+    if (newDate.toString().empty()) {
+        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты!");
+        return;
+    }
+
+    QString filePath = QDir::homePath() + "/Документы/453505/ОАиП_2/dates.txt";
+
+    QVector<Date> dates = readDatesFromFile(filePath);
+    if (row < dates.size()) {
+        dates[row] = newDate;
+    }
+
+    QFile file("dates.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Ошибка", "Не удалось открыть файл для записи!");
+        return;
+    }
+
+    QTextStream out(&file);
+    for (const Date& date : dates) {
+        out << QString::fromStdString(date.toString()) << "\n";
+    }
+    file.close();
+
     displayDates(dates);
 }
 
@@ -171,17 +164,20 @@ bool MainWindow::validateInputs() {
         return false;
     }
     if (!validateInput(currentDateStr)) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат текущей даты!");
+        QMessageBox::warning(this, "Ошибка", QString("Некорректный формат даты!\n"
+                                                     "Используйте формат ДД.ММ.ГГГГ"));
         return false;
     }
 
     if (!birthdayDateStr.isEmpty() && !validateInput(birthdayDateStr)) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат даты рождения!");
+        QMessageBox::warning(this, "Ошибка", QString("Некорректный формат даты рождения!\n"
+                                                     "Используйте формат ДД.ММ.ГГГГ"));
         return false;
     }
 
     if (!anotherDateStr.isEmpty() && !validateInput(anotherDateStr)) {
-        QMessageBox::warning(this, "Ошибка", "Некорректный формат произвольной даты!");
+        QMessageBox::warning(this, "Ошибка", QString("Некорректный формат произвольной даты!\n"
+                                                     "Используйте формат ДД.ММ.ГГГГ"));
         return false;
     }
 
@@ -202,13 +198,12 @@ Date MainWindow::parseDate(const QString &dateStr)
         int month = parts[1].toInt();
         int year = parts[2].toInt();
 
-        // Проверка корректности даты
         QDate date(year, month, day);
         if (date.isValid()) {
             return Date(day, month, year);
         }
     }
-    return Date(); // Возвращаем пустую дату, если строка некорректна
+    return Date();
 }
 
 void MainWindow::updateTable()
@@ -216,7 +211,7 @@ void MainWindow::updateTable()
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(1);
 
-    static bool isUpdating = false; // Флаг для предотвращения повторного вызова
+    static bool isUpdating = false;
     if (isUpdating) return;
     isUpdating = true;
 
@@ -250,14 +245,16 @@ void MainWindow::updateTable()
     QString anotherDateStr = ui->AnotherEdit->text();
     Date anotherDate = parseDate(anotherDateStr);
 
-    if (!anotherDateStr.isEmpty() && !anotherDate.toString().empty()) {
+    if (anotherDateStr.isEmpty() && anotherDate.toString().empty()) {
+        ui->tableWidget->setItem(0, 6, new QTableWidgetItem("0"));
+
+    } else {
         int duration = currentDate.Duration(anotherDate);
         ui->tableWidget->setItem(0, 6, new QTableWidgetItem(QString::number(duration)));
-    } else {
-        ui->tableWidget->setItem(0, 6, new QTableWidgetItem("0"));
     }
 
     isUpdating = false;
+
     ui->tableWidget->update();
 }
 
@@ -265,34 +262,27 @@ void MainWindow::updateTableForFileDates(const QVector<Date>& dates) {
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(dates.size());
 
-    // Используем системную дату для вычислений
     QDate sysDate = QDate::currentDate();
     Date currentDate(sysDate.day(), sysDate.month(), sysDate.year());
 
-    // Отображаем даты из файла
     for (int i = 0; i < dates.size(); ++i) {
         Date fileDate = dates[i];
         Date nextDay = fileDate.NextDay();
-        int difference = currentDate.Duration(fileDate); // Разница с текущей датой
 
-        // Заполняем таблицу
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(fileDate.toString())));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(nextDay.toString())));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(fileDate.PreviousDate().toString())));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(fileDate.IsLeap() ? "Да" : "Нет"));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(fileDate.WeekNumber())));
-
-        // Инициализируем колонки нулями
-        ui->tableWidget->setItem(i, 5, new QTableWidgetItem("0")); // До дня рождения
-        ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0")); // Разница в днях
+        ui->tableWidget->setItem(i, 5, new QTableWidgetItem("0"));
+        ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0"));
     }
 }
 
-QVector<Date> MainWindow::readDatesFromFile(const QString &filePath)
-{
+QVector<Date> MainWindow::readDatesFromFile(const QString &filePath) {
     QVector<Date> dates;
-    QFile file(filePath);
 
+    QFile file(filePath);
     if (!file.exists()) {
         QMessageBox::warning(this, "Ошибка", "Файл не найден!");
         return dates;
@@ -306,10 +296,11 @@ QVector<Date> MainWindow::readDatesFromFile(const QString &filePath)
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
+
         if (line.isEmpty()) continue;
 
         Date date = parseDate(line);
-        if (!date.toString().empty()) { // Проверяем, что дата корректна
+        if (!date.toString().empty()) {
             dates.append(date);
         } else {
             QMessageBox::warning(this, "Ошибка", "Некорректный формат даты в файле: " + line);
@@ -317,36 +308,31 @@ QVector<Date> MainWindow::readDatesFromFile(const QString &filePath)
     }
 
     file.close();
+
     return dates;
 }
 
 void MainWindow::displayDates(const QVector<Date>& dates) {
     ui->tableWidget->setRowCount(dates.size());
 
-    // Получаем текущую дату из поля ввода
     QString currentDateStr = ui->CurrentEdit->text();
     Date currentDate = parseDate(currentDateStr);
 
-    // Если поле пустое или дата некорректна, используем системную дату
     if (currentDate.toString().empty()) {
         QDate sysDate = QDate::currentDate();
         currentDate = Date(sysDate.day(), sysDate.month(), sysDate.year());
     }
 
-    // Отображаем даты
     for (int i = 0; i < dates.size(); ++i) {
         Date fileDate = dates[i];
         Date nextDay = fileDate.NextDay();
-        int difference = currentDate.Duration(fileDate); // Разница с текущей датой
 
-        // Заполняем таблицу
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(fileDate.toString())));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(nextDay.toString())));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(fileDate.PreviousDate().toString())));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(fileDate.IsLeap() ? "Да" : "Нет"));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(fileDate.WeekNumber())));
 
-        // Для введенных вручную дат используем текущую логику
         QString birthdayDateStr = ui->BirthdayEdit->text();
         Date birthdayDate = parseDate(birthdayDateStr);
 
@@ -359,11 +345,11 @@ void MainWindow::displayDates(const QVector<Date>& dates) {
         QString anotherDateStr = ui->AnotherEdit->text();
         Date anotherDate = parseDate(anotherDateStr);
 
-        if (!anotherDateStr.isEmpty() && !anotherDate.toString().empty()) {
+        if (anotherDateStr.isEmpty() && anotherDate.toString().empty()) {
+            ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0"));
+        } else {
             int duration = currentDate.Duration(anotherDate);
             ui->tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(duration)));
-        } else {
-            ui->tableWidget->setItem(i, 6, new QTableWidgetItem("0"));
         }
     }
 }

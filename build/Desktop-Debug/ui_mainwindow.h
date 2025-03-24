@@ -37,6 +37,8 @@ public:
     QPushButton *addButton;
     QLabel *AnotherLabel;
     QLineEdit *AnotherEdit;
+    QPushButton *deleteButton;
+    QPushButton *editButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -77,6 +79,12 @@ public:
         AnotherEdit = new QLineEdit(centralwidget);
         AnotherEdit->setObjectName("AnotherEdit");
         AnotherEdit->setGeometry(QRect(40, 510, 131, 31));
+        deleteButton = new QPushButton(centralwidget);
+        deleteButton->setObjectName("deleteButton");
+        deleteButton->setGeometry(QRect(650, 540, 171, 51));
+        editButton = new QPushButton(centralwidget);
+        editButton->setObjectName("editButton");
+        editButton->setGeometry(QRect(650, 600, 171, 51));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -100,6 +108,8 @@ public:
         openFileButton->setText(QCoreApplication::translate("MainWindow", "\320\236\321\202\320\272\321\200\321\213\321\202\321\214 \321\204\320\260\320\271\320\273", nullptr));
         addButton->setText(QCoreApplication::translate("MainWindow", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\264\320\260\321\202\321\203", nullptr));
         AnotherLabel->setText(QCoreApplication::translate("MainWindow", "\320\237\321\200\320\276\320\270\320\267\320\262\320\276\320\273\321\214\320\275\320\260\321\217 \320\264\320\260\321\202\320\260", nullptr));
+        deleteButton->setText(QCoreApplication::translate("MainWindow", "\320\243\320\264\320\260\320\273\320\270\321\202\321\214 \320\264\320\260\321\202\321\203", nullptr));
+        editButton->setText(QCoreApplication::translate("MainWindow", "\320\240\320\265\320\264\320\260\320\272\321\202\320\270\321\200\320\276\320\262\320\260\321\202\321\214 \320\264\320\260\321\202\321\203", nullptr));
     } // retranslateUi
 
 };

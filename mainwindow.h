@@ -41,7 +41,7 @@ private:
     void addRow(const QString &property, const QString &value);
     void clearInputs();
     void updateTableForFileDates(const QVector<Date>& dates);
-    QVector<Date> readDatesFromFile(const QString &filePath); // Чтение дат из файла
+    QVector<Date> readDatesFromFile(const QString &filePath);
     void displayDates(const QVector<Date>& dates);
     bool validateInput(const QString &input);
     bool validateInputs();
